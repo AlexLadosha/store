@@ -3,19 +3,35 @@
 $pdo = new PDO($db_dsn, $db_username, $db_password);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-
 if ($_GET['page'] === 'create_product') {
     if (isset($_POST['name']) && isset($_POST['description']) && isset($_POST['price'])) {
          var_dump($_POST);
         //  exit;
         if ($_POST['name'] && $_POST['description'] && $_POST['price']) {
-            var_dump($_POST);
+//            var_dump($_POST);
 
-            $stmt = $pdo->prepare("INSERT INTO products (name, description, price ) VALUES (:name, :description, :price)");
+            $file_name = '';
+            if(!empty($_FILES["image"])) {
+                $file_info = $_FILES["image"];
+
+                $target_dir = $_SERVER["DOCUMENT_ROOT"]."/uploads/";
+                $file_name = basename($file_info["name"]);
+                $target_file = $target_dir . $file_name;
+
+                if (!move_uploaded_file($file_info["tmp_name"], $target_file)) {
+                    die('file upload error');
+                }
+            }
+
+            $data = json_encode($_POST);
+
+            $stmt = $pdo->prepare("INSERT INTO products (name, description, price, image, data ) VALUES (:name, :description, :price, :image, :data)");
             $data = [
                 ':name' => $_POST['name'],
                 ':description' => $_POST['description'],
                 ':price' => $_POST['price'],
+                ':image' => $file_name,
+                ':data' => $data,
             ];
             $stmt->execute($data);
             $product_id = $pdo->lastInsertId();
@@ -61,6 +77,10 @@ if ($_GET['page'] === 'create_product') {
         <br>
         Price
         <input name="price" size=5/>$
+        <br>
+        <br>
+        Image
+        <input type="file" name="image">
         <br>
         <br>
         <input type="submit" value="Create"/>
