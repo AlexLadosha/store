@@ -1,7 +1,7 @@
 <?php
 if($_GET['page'] === 'products') {
     $pdo = new PDO($db_dsn, $db_username, $db_password);
-    $sth = $pdo->prepare("SELECT * FROM `products`");
+    $sth = $pdo->prepare("SELECT * FROM `products` ORDER BY name");
     $sth->execute();
 
     if(!empty($_COOKIE['product_deleted'])) {
@@ -14,6 +14,7 @@ if($_GET['page'] === 'products') {
     <?php
     while ($result = $sth->fetch(PDO::FETCH_ASSOC)) {
         $edit_url = "index.php?page=edit_product&product_id={$result['id']}";
+
 ?>
         <tr>
             <td><?php echo $result['id']; ?></td>
@@ -24,6 +25,7 @@ if($_GET['page'] === 'products') {
 
             </td>
             <td><?php echo $result['price']; ?></td>
+            <td><?php echo $result['image']; ?></td>
             <td>
                 <a href="index.php?page=edit_product&product_id=<?php echo $result['id']; ?>">Edit</a>
                 &nbsp;

@@ -16,5 +16,12 @@ $stmt->execute($data);
 
 setcookie("product_deleted", 1);
 
+// Redirect
 header('Location: index.php?page=products');
 exit;
+
+function redirect($url) {
+    header('Location: '.$url);
+    exit;
+
+}
